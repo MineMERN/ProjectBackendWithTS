@@ -1,4 +1,4 @@
-import { signupSchema, loginSchema } from "../validators/auth.validator";
+import { signupSchema, loginSchema, profileSchema } from "../validators/auth.validator";
 import { Request, Response, NextFunction } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
@@ -36,4 +36,13 @@ export const auth = asyncHandler(async (req: Request, res: Response, next: NextF
     if(!decode) throw new ApiError(500, "Token as expire! Login or signup again!");
     (req as any).user = jwt.decode(token)
     next();
+});
+
+export const profile = asyncHandler((req: Request, res: Response, next: NextFunction) => {
+  const parse = profileSchema.safeParse(req.body);
+  if(!parse.success){
+    res.status(400).json({error : parse.error.format()})
+  }
+  // (req as any).user = parse.data;
+  next();
 })
